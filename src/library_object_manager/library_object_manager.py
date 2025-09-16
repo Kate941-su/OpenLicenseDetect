@@ -23,7 +23,6 @@ class LibraryObjectManager:
                 # Get the full path of the LICENSE file
                 license_path = os.path.join(root, license_file_name)
                 library_path = root  # The directory containing the LICENSE file
-                print(f"Full LICENSE path: {os.path.abspath(license_path)}")
                 
                 try:
                     # Create LibraryObject and store the library path
@@ -35,9 +34,6 @@ class LibraryObjectManager:
                     
                 except Exception as e:
                     print(f"Error processing {license_path}: {e}")
-        
-        print(f"Total libraries found: {len(self.library_object_list)}")
-        # print(f"Library paths: {self.library_paths}")
 
     def generate_file(self):
         """Generate a JSON file with the library information and license text."""
