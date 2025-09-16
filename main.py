@@ -1,6 +1,7 @@
-import src.library_reader as reader
-
+import src.reader.library_reader as reader
+from src.library_object_manager.library_object_manager import LibraryObjectManager
 
 if __name__ == "__main__":
-    reader = reader.LibraryObject(path_to_license_text="license/lgpl-2/LICENSE")
-    print(reader.oss_type.value)
+    manager = LibraryObjectManager(library_directory_path="node_modules")
+    manager.crawling_library_directory()
+    manager.generate_file()

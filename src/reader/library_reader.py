@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import json
 import re
 from src.model.oss_type import OSSType
+from src.constant import license_file_name
 
 @dataclass
 class LibraryObject:
@@ -12,7 +13,6 @@ class LibraryObject:
     oss_type: OSSType
     raw_license_text: str
     _output_file_name: str = "oss_license_detect_intermediate"
-    _detected_license_text: str = "LICENSE"
 
     def __init__(self, path_to_license_text: str):
         with open(path_to_license_text, "r") as f:
@@ -99,7 +99,7 @@ class LibraryObject:
 
     def parse_license_text(self):
         """Parse the license text from the raw license text."""
-        self.raw_license_text = self.raw_license_text.split(self._detected_license_text)
+        self.raw_license_text = self.raw_license_text.split(license_file_name)
 
     def generate_file(self):
         """Generate a JSON file with the library information and license text."""

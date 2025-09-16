@@ -8,7 +8,7 @@ import os
 import pytest
 import json
 from pathlib import Path
-from src.library_reader import LibraryObject
+from src.reader.library_reader import LibraryObject
 from src.model.oss_type import OSSType
 
 
