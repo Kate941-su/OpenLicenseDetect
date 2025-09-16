@@ -2,7 +2,8 @@ import os
 import json
 from pathlib import Path
 from src.reader.library_reader import LibraryObject
-from src.constant import license_file_name
+from src.constant import license_file_name, intermediate_file_name
+import yaml
 
 class LibraryObjectManager:    
     def __init__(self, library_directory_path: str):
@@ -53,5 +54,29 @@ class LibraryObjectManager:
             "total_libraries": len(self.library_object_list),
             "library_paths": self.library_paths
         }
-        with open(f"oss_license_detect_intermediate.json", "w") as f:
+        with open(f"{intermediate_file_name}.json", "w") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
+
+
+    def convert_json_to_yaml(self):
+        """
+        Convert JSON file to YAML format.        
+        Args:
+        """
+        try:
+            # Read JSON file
+            with open(f"{intermediate_file_name}.json", 'r', encoding='utf-8') as json_file:
+                data = json.load(json_file)
+            
+            # Write YAML file
+            with open(f"{intermediate_file_name}.yaml", 'w', encoding='utf-8') as yaml_file:
+                yaml.dump(data, yaml_file, default_flow_style=False, allow_unicode=True, sort_keys=False)
+            
+            print(f"Successfully converted {intermediate_file_name}.json to {intermediate_file_name}.yaml")
+            
+        except FileNotFoundError:
+            print(f"Error: File {intermediate_file_name}.json not found")
+        except json.JSONDecodeError as e:
+            print(f"Error: Invalid JSON in {intermediate_file_name}.json: {e}")
+        except Exception as e:
+            print(f"Error: {e}")

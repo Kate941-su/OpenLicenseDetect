@@ -37,7 +37,7 @@ def main():
     manager = LibraryObjectManager(library_directory_path=args.path)
     manager.crawling_library_directory()
     manager.generate_file()
-    
+    manager.convert_json_to_yaml()
     if args.verbose:
         print("License detection completed successfully!")
 

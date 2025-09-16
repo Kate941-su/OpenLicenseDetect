@@ -1,1 +1,0 @@
-python3 -m pytest test_licenses.py::TestLicenseParsing::test_license_directory_exists -v
