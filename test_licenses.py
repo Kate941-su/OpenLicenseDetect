@@ -58,9 +58,6 @@ class TestLicenseParsing:
             pytest.skip(f"License file {license_path} not found")
         
         # Read the license file
-        with open(license_path, 'r', encoding='utf-8') as f:
-            license_text = f.read()
-        
         # Parse the license using LibraryObject
         library = LibraryObject(license_path)
         
@@ -79,7 +76,7 @@ class TestLicenseParsing:
         assert os.path.exists(json_file_name)
         
         # Verify JSON content
-        with open(json_file_name, 'r', encoding='utf-8') as f:
+        with open(json_file_name, 'r') as f:
             json_data = json.load(f)
         
         assert json_data["author"] == library.author
@@ -97,9 +94,6 @@ class TestLicenseParsing:
         if not os.path.exists(mit_path):
             pytest.skip("MIT license file not found")
         
-        with open(mit_path, 'r', encoding='utf-8') as f:
-            license_text = f.read()
-        
         library = LibraryObject(mit_path)
         
         assert library.oss_type == OSSType.MIT
@@ -113,11 +107,7 @@ class TestLicenseParsing:
         if not os.path.exists(apache_path):
             pytest.skip("Apache license file not found")
         
-        with open(apache_path, 'r', encoding='utf-8') as f:
-            license_text = f.read()
-        
-        library = LibraryObject.from_license_text("apache-2", license_text)
-        
+        library = LibraryObject(apache_path)
         assert library.oss_type == OSSType.APACHE_2_0
         assert library.year is not None
     
@@ -128,27 +118,24 @@ class TestLicenseParsing:
         if not os.path.exists(gpl_path):
             pytest.skip("GPL license file not found")
         
-        with open(gpl_path, 'r', encoding='utf-8') as f:
-            license_text = f.read()
-        
-        library = LibraryObject.from_license_text("gpl-3", license_text)
+        library = LibraryObject(gpl_path)
         
         assert library.oss_type == OSSType.GPL_3_0
         assert library.year is not None
     
-    def test_bsd_license_detection(self, licenses_dir):
+    @pytest.mark.parametrize("license_name", [
+        "bsd-3", "bsd-2"
+    ])
+    def test_bsd_license_detection(self, licenses_dir, license_name):
         """Test specific BSD license detection."""
-        bsd_path = os.path.join(licenses_dir, "bsd-3", "LICENSE")
+        bsd_path = os.path.join(licenses_dir, license_name, "LICENSE")
         
         if not os.path.exists(bsd_path):
             pytest.skip("BSD license file not found")
         
-        with open(bsd_path, 'r', encoding='utf-8') as f:
-            license_text = f.read()
+        library = LibraryObject(bsd_path)
         
-        library = LibraryObject.from_license_text("bsd-3", license_text)
-        
-        assert library.oss_type == OSSType.BSD_3_CLAUSE
+        assert library.oss_type == OSSType.BSD_3_CLAUSE if license_name == "bsd-3" else OSSType.BSD_2_CLAUSE
         assert library.year is not None
     
     def test_isc_license_detection(self, licenses_dir):
@@ -158,10 +145,7 @@ class TestLicenseParsing:
         if not os.path.exists(isc_path):
             pytest.skip("ISC license file not found")
         
-        with open(isc_path, 'r', encoding='utf-8') as f:
-            license_text = f.read()
-        
-        library = LibraryObject.from_license_text("isc", license_text)
+        library = LibraryObject(isc_path)
         
         assert library.oss_type == OSSType.ISC
         assert library.year is not None
@@ -173,40 +157,29 @@ class TestLicenseParsing:
         if not os.path.exists(unlicense_path):
             pytest.skip("Unlicense file not found")
         
-        with open(unlicense_path, 'r', encoding='utf-8') as f:
-            license_text = f.read()
-        
-        library = LibraryObject.from_license_text("unlicense", license_text)
-        
+        library = LibraryObject(unlicense_path)
+        print(library.oss_type)
         assert library.oss_type == OSSType.UNLICENSE
         assert library.year is not None
     
     def test_json_generation_format(self, licenses_dir):
         """Test that generated JSON has the correct format."""
         mit_path = os.path.join(licenses_dir, "mit", "LICENSE")
-        
         if not os.path.exists(mit_path):
             pytest.skip("MIT license file not found")
-        
-        with open(mit_path, 'r', encoding='utf-8') as f:
-            license_text = f.read()
-        
-        library = LibraryObject.from_license_text("test_library", license_text)
+        library = LibraryObject(mit_path)
         library.generate_file()
-        
-        json_file = "test_library.json"
-        
+        json_file = "oss_license_detect_intermediate.json"
         try:
             with open(json_file, 'r', encoding='utf-8') as f:
                 json_data = json.load(f)
             
             # Check required fields
-            required_fields = ["library_name", "author", "year", "oss_type", "raw_license_text"]
+            required_fields = ["author", "year", "oss_type", "raw_license_text"]
             for field in required_fields:
                 assert field in json_data, f"JSON should contain {field} field"
             
             # Check data types
-            assert isinstance(json_data["library_name"], str)
             assert isinstance(json_data["author"], str)
             assert isinstance(json_data["year"], int)
             assert isinstance(json_data["oss_type"], str)

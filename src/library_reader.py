@@ -11,7 +11,7 @@ class LibraryObject:
     year: int
     oss_type: OSSType
     raw_license_text: str
-    _output_file_name: str = "oss_license_detect_intermediate.txt"
+    _output_file_name: str = "oss_license_detect_intermediate"
     _detected_license_text: str = "LICENSE"
 
     def __init__(self, path_to_license_text: str):
@@ -42,15 +42,19 @@ class LibraryObject:
                 return OSSType.GPL_2_0
         
         # BSD detection
-        if "bsd license" in license_text_lower or "berkeley software distribution" in license_text_lower:
-            if "3-clause" in license_text_lower or "3 clause" in license_text_lower:
-                return OSSType.BSD_3_CLAUSE
-            elif "2-clause" in license_text_lower or "2 clause" in license_text_lower:
-                return OSSType.BSD_2_CLAUSE
-        
+        if "bsd 3-clause" in license_text_lower or "3 clause" in license_text_lower:
+            return OSSType.BSD_3_CLAUSE
+        if "bsd 2-clause" in license_text_lower or "2 clause" in license_text_lower:
+            return OSSType.BSD_2_CLAUSE
+    
         # ISC License detection
         if "isc license" in license_text_lower or "internet systems consortium" in license_text_lower:
             return OSSType.ISC
+        
+        # Unlicense detection
+        if "unlicense" in license_text_lower or "public domain" in license_text_lower:
+            return OSSType.UNLICENSE
+            
         # Default to OTHER if no specific license is detected
         return OSSType.OTHER
     

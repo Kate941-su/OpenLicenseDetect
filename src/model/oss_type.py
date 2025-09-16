@@ -13,7 +13,7 @@ class OSSType(Enum):
     MPL_2_0 = "MPL-2.0"
     EPL_2_0 = "EPL-2.0"
     CDDL_1_1 = "CDDL-1.1"
-    UNLICENSE = "Unlicense"
     CC0_1_0 = "CC0-1.0"
     AGPL_3_0 = "AGPL-3.0"
+    UNLICENSE = "Unlicense"
     OTHER = "Other"
